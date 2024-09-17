@@ -23,12 +23,49 @@ func GetUsername(username string) {
 		log.Fatal(err)
 	}
 
-	// Pretty-print the JSON response
+	// Unmarshal the JSON response
 	var prettyResponse []map[string]interface{}
 	err = json.Unmarshal(responseData, &prettyResponse)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(prettyResponse[0]["type"])
+	for _, data := range prettyResponse {
+		switch eventType := data["type"]; eventType {
+		case "CommitCommentEvent":
+			commitCommentEvent(data)
+		case "CreateEvent":
+			createEvent(data)
+		case "DeleteEvent":
+
+		case "ForkEvent":
+
+		case "GollumEvent":
+
+		case "IssueCommentEvent":
+
+		case "IssuesEvent":
+
+		case "MemberEvent":
+
+		case "PublicEvent":
+
+		case "PullRequestEvent":
+
+		case "PullRequestReviewEvent":
+
+		case "PullRequestReviewCommentEvent":
+
+		case "PullRequestReviewThreadEvent":
+
+		case "PushEvent":
+
+		case "ReleaseEvent":
+
+		case "SponsorshipEvent":
+
+		case "WatchEvent":
+			watchEvent(data)
+		}
+	}
 }
