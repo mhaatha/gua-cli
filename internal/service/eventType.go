@@ -55,6 +55,18 @@ func deleteEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Deleted a %s, named %s from %s repository\n", branchOrTag, branchOrTagName, repoName)
 }
 
+func forkEvent(rawData map[string]interface{}) {
+	var forkedRepoName string
+
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if forkee, ok := payload["forkee"].(map[string]interface{}); ok {
+			forkedRepoName = forkee["name"].(string)
+		}
+	}
+
+	fmt.Printf("- Forked %s\n", forkedRepoName)
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
