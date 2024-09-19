@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log"
+	"strings"
 )
 
 func commitCommentEvent(rawData map[string]interface{}) {
@@ -65,6 +66,26 @@ func forkEvent(rawData map[string]interface{}) {
 	}
 
 	fmt.Printf("- Forked %s\n", forkedRepoName)
+}
+
+func gollumEvent(rawData map[string]interface{}) {
+	var pageName, title, action string
+
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+
+		if pages, ok := payload["pages"].([]interface{}); ok {
+			for _, page := range pages {
+				if pageData, ok := page.(map[string]interface{}); ok {
+					pageName = pageData["page_name"].(string)
+					title = pageData["title"].(string)
+					action = pageData["title"].(string)
+				}
+			}
+		}
+
+	}
+
+	fmt.Printf("%s a wiki named %s in %s page\n", strings.ToUpper(string(action[0]))+strings.ToLower(action[1:]), title, pageName)
 }
 
 func watchEvent(rawData map[string]interface{}) {

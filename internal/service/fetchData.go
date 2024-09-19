@@ -41,7 +41,7 @@ func GetUsername(username string) {
 		case "ForkEvent":
 			forkEvent(data)
 		case "GollumEvent":
-
+			gollumEvent(data)
 		case "IssueCommentEvent":
 
 		case "IssuesEvent":
