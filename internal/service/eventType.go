@@ -226,6 +226,28 @@ func publicEvent() {
 	fmt.Printf("- Published a private repository\n")
 }
 
+func pullRequestEvent(rawData map[string]interface{}) {
+	var actionType, repoName string
+
+	if repo, ok := rawData["repo"].(map[string]interface{}); ok {
+		if repoName, ok = repo["name"].(string); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	}
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if actionType, ok = payload["action"].(string); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+
+	fmt.Printf("- %s a pull request in %s\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]), repoName)
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
