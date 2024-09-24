@@ -222,6 +222,10 @@ func memberEvent(rawData map[string]interface{}) {
 	}
 }
 
+func publicEvent() {
+	fmt.Printf("- Published a private repository\n")
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
