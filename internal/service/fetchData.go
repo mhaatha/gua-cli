@@ -45,7 +45,7 @@ func GetUsername(username string) {
 		case "IssueCommentEvent":
 			issueCommentEvent(data)
 		case "IssuesEvent":
-
+			issusesEvent(data)
 		case "MemberEvent":
 
 		case "PublicEvent":
