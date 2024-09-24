@@ -137,6 +137,22 @@ func gollumEvent(rawData map[string]interface{}) {
 	fmt.Printf("%s a wiki named %s in %s page\n", strings.ToUpper(string(action[0]))+strings.ToLower(action[1:]), title, pageName)
 }
 
+func issueCommentEvent(rawData map[string]interface{}) {
+	var actionType string
+
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if actionType, ok = payload["action"].(string); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+
+	fmt.Printf("- %s an issue comment\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
