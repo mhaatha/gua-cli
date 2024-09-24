@@ -169,6 +169,59 @@ func issusesEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s an issue\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
+func memberEvent(rawData map[string]interface{}) {
+	var actionType string
+
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if actionType, ok = payload["action"].(string); actionType == "added" && ok {
+			if member, ok := payload["member"].(map[string]interface{}); ok {
+				if memberName, ok := member["login"].(string); ok {
+					fmt.Printf("- Added %s as a collaborator\n", memberName)
+				} else {
+					log.Println("Error: Cannot fetch repository data.")
+					return
+				}
+			} else {
+				log.Println("Error: Cannot fetch repository data.")
+				return
+			}
+		} else if actionType == "edited" && ok {
+			if changes, ok := payload["changes"].(map[string]interface{}); ok {
+				if member, ok := payload["member"].(map[string]interface{}); ok {
+					if memberName, ok := member["login"].(string); ok {
+						if newPermission, ok := changes["role"].(map[string]interface{}); ok {
+							if newPermissionValue, ok := newPermission["new_value"].(string); ok {
+								fmt.Printf("- Changed %s's permission to %s\n", memberName, newPermissionValue)
+							} else {
+								log.Println("Error: Cannot fetch repository data.")
+								return
+							}
+						} else {
+							log.Println("Error: Cannot fetch repository data.")
+							return
+						}
+					} else {
+						log.Println("Error: Cannot fetch repository data.")
+						return
+					}
+				} else {
+					log.Println("Error: Cannot fetch repository data.")
+					return
+				}
+			} else {
+				log.Println("Error: Cannot fetch repository data.")
+				return
+			}
+		} else {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
