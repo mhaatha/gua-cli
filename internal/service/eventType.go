@@ -296,6 +296,35 @@ func pullRequestReviewThreadEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Marked a PR comment thread to %s\n", actionType)
 }
 
+func pushEvent(rawData map[string]interface{}) {
+	var size int
+	var repoName string
+
+	// Fetch size of commit data
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if size, ok = payload["size"].(int); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+
+	// Fetch repository name
+	if repo, ok := rawData["repo"].(map[string]interface{}); ok {
+		if repoName, ok = repo["name"].(string); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+
+	fmt.Printf("Pushed %d commit(s) to %s\n", size, repoName)
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
