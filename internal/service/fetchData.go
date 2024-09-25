@@ -63,7 +63,7 @@ func GetUsername(username string) {
 		case "ReleaseEvent":
 			releaseEvent(data)
 		case "SponsorshipEvent":
-
+			sponsorshipEvent(data)
 		case "WatchEvent":
 			watchEvent(data)
 		}
