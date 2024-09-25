@@ -297,12 +297,12 @@ func pullRequestReviewThreadEvent(rawData map[string]interface{}) {
 }
 
 func pushEvent(rawData map[string]interface{}) {
-	var size int
+	var size float64
 	var repoName string
 
 	// Fetch size of commit data
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
-		if size, ok = payload["size"].(int); !ok {
+		if size, ok = payload["size"].(float64); !ok {
 			log.Println("Error: Cannot fetch repository data.")
 			return
 		}
@@ -322,7 +322,7 @@ func pushEvent(rawData map[string]interface{}) {
 		return
 	}
 
-	fmt.Printf("Pushed %d commit(s) to %s\n", size, repoName)
+	fmt.Printf("- Pushed %v commit(s) to %s\n", size, repoName)
 }
 
 func watchEvent(rawData map[string]interface{}) {
