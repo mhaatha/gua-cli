@@ -55,7 +55,7 @@ func GetUsername(username string) {
 		case "PullRequestReviewEvent":
 			pullRequestReviewEvent(data)
 		case "PullRequestReviewCommentEvent":
-
+			pullRequestReviewCommentEvent(data)
 		case "PullRequestReviewThreadEvent":
 
 		case "PushEvent":

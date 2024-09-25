@@ -264,6 +264,22 @@ func pullRequestReviewEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a PR review\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
+func pullRequestReviewCommentEvent(rawData map[string]interface{}) {
+	var actionType string
+
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if actionType, ok = payload["action"].(string); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+
+	fmt.Printf("- %s a PR review comment\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
