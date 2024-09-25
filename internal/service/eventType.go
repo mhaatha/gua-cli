@@ -325,6 +325,22 @@ func pushEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Pushed %v commit(s) to %s\n", size, repoName)
 }
 
+func releaseEvent(rawData map[string]interface{}) {
+	var actionType string
+
+	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
+		if actionType, ok = payload["action"].(string); !ok {
+			log.Println("Error: Cannot fetch repository data.")
+			return
+		}
+	} else {
+		log.Println("Error: Cannot fetch repository data.")
+		return
+	}
+
+	fmt.Printf("- %s a release\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
+}
+
 func watchEvent(rawData map[string]interface{}) {
 	var repoName string
 
