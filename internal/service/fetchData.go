@@ -36,6 +36,9 @@ func GetUsername(username string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if response.StatusCode == 404 {
+		log.Fatal("Username not found")
+	}
 	defer response.Body.Close()
 
 	// Read the responseData
