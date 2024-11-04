@@ -39,6 +39,9 @@ func GetUsername(username string) {
 	if response.StatusCode == 404 {
 		log.Fatal("Username not found")
 	}
+	if response.StatusCode == 401 {
+		log.Fatal("Provide your Github Personal Access Token in .env file")
+	}
 	defer response.Body.Close()
 
 	// Read the responseData
