@@ -7,15 +7,18 @@ import (
 	"os"
 	"time"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 // HTTP Request TUI.
 
 type model struct {
-	status int    // HTTP response
-	err    error  // Possible error
-	url    string // URL string
+	status  int    // HTTP response
+	err     error  // Possible error
+	url     string // URL string
+	spinner spinner.Model
 }
 
 // checkServer is a `Cmd` that makes a request to a server
@@ -51,11 +54,18 @@ func (e errMsg) Error() string { return e.err.Error() }
 
 // We don't call the function
 // the Bubble Tea runtime will do that when the time is right.
-func (m model) Init() tea.Cmd {
-	return checkServer(m.url)
+func (m *model) Init() tea.Cmd {
+	m.spinner = spinner.New()
+	m.spinner.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
+	m.spinner.Spinner = spinner.Line
+
+	return tea.Batch(
+		checkServer(m.url),
+		m.spinner.Tick,
+	)
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case statusMsg:
 		// The server returned a status message. Save it to our model. Also
@@ -79,10 +89,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		if msg.Type == tea.KeyEsc {
-			return model{
+			return &model{
 				err: errors.New("escape pressed"),
 			}, tea.Quit
 		}
+
+	case spinner.TickMsg:
+		var cmd tea.Cmd
+		m.spinner, cmd = m.spinner.Update(msg)
+		return m, cmd
+
+	default:
+		return m, nil
 	}
 
 	// If we happen to get any other messages, don't do anything.
@@ -91,14 +109,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 // View is very straightforward. We look at the current model
 // and build a string accordingly
-func (m model) View() string {
+func (m *model) View() string {
 	// If there's an error, print it out and don't do anything else.
 	if m.err != nil {
 		return fmt.Sprintf("\nWe had some trouble: %v\n", m.err)
 	}
 
 	// Tell the user we're doing something.
-	s := fmt.Sprintf("Checking %s ... ", m.url)
+	s := fmt.Sprintf("%s Checking %s ... ", m.spinner.View(), m.url)
 
 	// When the server responds with a status, add it to the current line.
 	if m.status > 0 {
@@ -109,8 +127,8 @@ func (m model) View() string {
 	return "\n" + s + "\n\n"
 }
 
-func initialModel() model {
-	return model{
+func initialModel() *model {
+	return &model{
 		url: "https://charm.sh/",
 	}
 }
