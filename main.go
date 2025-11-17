@@ -35,6 +35,7 @@ type (
 type model struct {
 	textInput textinput.Model
 	service   service.FetchDataService
+	isLoading bool
 	err       error
 }
 
@@ -67,6 +68,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyEnter:
 			username := m.textInput.Value()
+			m.isLoading = true
 
 			return m, checkUserCmd(m.service, username)
 		}
@@ -83,6 +85,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	if m.err != nil {
 		return fmt.Sprintf("Ups, error is occurred: %v", m.err)
+	}
+
+	if m.isLoading {
+		return "Loading..."
 	}
 
 	return fmt.Sprintf(
