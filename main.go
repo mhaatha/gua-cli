@@ -1,141 +1,103 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"net/http"
+	"log"
 	"os"
-	"time"
 
-	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/mhaatha/gua-cli/internal/config"
+	appError "github.com/mhaatha/gua-cli/internal/errors"
+	"github.com/mhaatha/gua-cli/internal/service"
 )
 
-// HTTP Request TUI.
+func main() {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Printf("error when calling LoadConfig: %v\n", appError.ErrCannotLoadEnv)
+		os.Exit(1)
+	}
 
-type model struct {
-	status  int    // HTTP response
-	err     error  // Possible error
-	url     string // URL string
-	spinner spinner.Model
-}
+	fetchDataService := service.NewFetchDataService(cfg)
 
-// checkServer is a `Cmd` that makes a request to a server
-// and returns the result as a `Msg`
-//
-// `Cmd`s are functions that perform some I/O and then return a `Msg`.
-// Checking the time, ticking a timer, reading from a disk, etc
-// are all I/O and should be run through commands.
-func checkServer(url string) tea.Cmd {
-	return func() tea.Msg {
-		// Create an HTTP client and make a GET request.
-		c := &http.Client{Timeout: 10 * time.Second}
-		res, err := c.Get(url)
-
-		if err != nil {
-			// There was an error making our request. Wrap the error we received
-			// in a message and return it.
-			return errMsg{err}
-		}
-		// We received a response from the server. Return the HTTP status code
-		// as a message.
-		return statusMsg(res.StatusCode)
+	p := tea.NewProgram(initialModel(fetchDataService))
+	if _, err := p.Run(); err != nil {
+		log.Printf("error when running the program: %v\n", err)
+		os.Exit(1)
 	}
 }
 
-type statusMsg int
+type (
+	errMsg error
+)
 
-type errMsg struct{ err error }
-
-// For messages that contain errors it's often handy to also implement the
-// error interface on the message.
-func (e errMsg) Error() string { return e.err.Error() }
-
-// We don't call the function
-// the Bubble Tea runtime will do that when the time is right.
-func (m *model) Init() tea.Cmd {
-	m.spinner = spinner.New()
-	m.spinner.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("69"))
-	m.spinner.Spinner = spinner.Line
-
-	return tea.Batch(
-		checkServer(m.url),
-		m.spinner.Tick,
-	)
+type model struct {
+	textInput textinput.Model
+	service   service.FetchDataService
+	err       error
 }
 
-func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func initialModel(fetchDataService service.FetchDataService) model {
+	ti := textinput.New()
+	ti.Placeholder = "username"
+	ti.Focus()
+	ti.CharLimit = 156
+	ti.Width = 50
+
+	return model{
+		textInput: ti,
+		service:   fetchDataService,
+		err:       nil,
+	}
+}
+
+func (m model) Init() tea.Cmd {
+	return textinput.Blink
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
+
 	switch msg := msg.(type) {
-	case statusMsg:
-		// The server returned a status message. Save it to our model. Also
-		// tell the Bubble Tea runtime we want to exit because we have nothing
-		// else to do. We'll still be able to render a final view with our
-		// status message.
-		m.status = int(msg)
-		return m, tea.Quit
+	case tea.KeyMsg:
+		switch msg.Type {
+		case tea.KeyCtrlC, tea.KeyEsc:
+			return m, tea.Quit
+
+		case tea.KeyEnter:
+			username := m.textInput.Value()
+
+			return m, checkUserCmd(m.service, username)
+		}
 
 	case errMsg:
-		// There was an error. Note it in the model. And tell the runtime
-		// we're done and want to quit.
 		m.err = msg
-		return m, tea.Quit
-
-	case tea.KeyMsg:
-		// Ctrl+c exits. Even with short running program it's good to have
-		// a quit key, just in case your logic is off. Users will be very
-		// annoyed if they can't exit.
-		if msg.Type == tea.KeyCtrlC {
-			return m, tea.Quit
-		}
-		if msg.Type == tea.KeyEsc {
-			return &model{
-				err: errors.New("escape pressed"),
-			}, tea.Quit
-		}
-
-	case spinner.TickMsg:
-		var cmd tea.Cmd
-		m.spinner, cmd = m.spinner.Update(msg)
-		return m, cmd
-
-	default:
 		return m, nil
 	}
 
-	// If we happen to get any other messages, don't do anything.
-	return m, nil
+	m.textInput, cmd = m.textInput.Update(msg)
+	return m, cmd
 }
 
-// View is very straightforward. We look at the current model
-// and build a string accordingly
-func (m *model) View() string {
-	// If there's an error, print it out and don't do anything else.
+func (m model) View() string {
 	if m.err != nil {
-		return fmt.Sprintf("\nWe had some trouble: %v\n", m.err)
+		return fmt.Sprintf("Ups, error is occurred: %v", m.err)
 	}
 
-	// Tell the user we're doing something.
-	s := fmt.Sprintf("%s Checking %s ... ", m.spinner.View(), m.url)
-
-	// When the server responds with a status, add it to the current line.
-	if m.status > 0 {
-		s += fmt.Sprintf("%d %s!", m.status, http.StatusText(m.status))
-	}
-
-	// Send off whatever we came up with above for rendering.
-	return "\n" + s + "\n\n"
+	return fmt.Sprintf(
+		"Which GitHub user do you want to check?\n\n%s\n\n%s",
+		m.textInput.View(),
+		"(esc to quit)",
+	) + "\n"
 }
 
-func initialModel() *model {
-	return &model{
-		url: "https://charm.sh/",
-	}
-}
-
-func main() {
-	if _, err := tea.NewProgram(initialModel()).Run(); err != nil {
-		fmt.Printf("Uh oh, there was an error: %v\n", err)
-		os.Exit(1)
+func checkUserCmd(service service.FetchDataService, username string) tea.Cmd {
+	return func() tea.Msg {
+		err := service.GetUsername(username)
+		if err != nil {
+			return errMsg(err)
+		}
+		return nil
 	}
 }

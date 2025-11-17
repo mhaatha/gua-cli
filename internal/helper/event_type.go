@@ -1,4 +1,4 @@
-package service
+package helper
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func commitCommentEvent(rawData map[string]interface{}) {
+func CommitCommentEvent(rawData map[string]interface{}) {
 	var repoName string
 
 	if repo, ok := rawData["repo"].(map[string]interface{}); ok {
@@ -22,7 +22,7 @@ func commitCommentEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Created commit comment on %s\n", repoName)
 }
 
-func createEvent(rawData map[string]interface{}) {
+func CreateEvent(rawData map[string]interface{}) {
 	var repoName, branchOrTag, branchOrTagName string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -56,7 +56,7 @@ func createEvent(rawData map[string]interface{}) {
 	}
 }
 
-func deleteEvent(rawData map[string]interface{}) {
+func DeleteEvent(rawData map[string]interface{}) {
 	var repoName, branchOrTag, branchOrTagName string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -87,7 +87,7 @@ func deleteEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Deleted a %s, named %s from %s repository\n", branchOrTag, branchOrTagName, repoName)
 }
 
-func forkEvent(rawData map[string]interface{}) {
+func ForkEvent(rawData map[string]interface{}) {
 	var forkedRepoName string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -108,7 +108,7 @@ func forkEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Forked %s\n", forkedRepoName)
 }
 
-func gollumEvent(rawData map[string]interface{}) {
+func GollumEvent(rawData map[string]interface{}) {
 	var pageName, title, action string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -137,7 +137,7 @@ func gollumEvent(rawData map[string]interface{}) {
 	fmt.Printf("%s a wiki named %s in %s page\n", strings.ToUpper(string(action[0]))+strings.ToLower(action[1:]), title, pageName)
 }
 
-func issueCommentEvent(rawData map[string]interface{}) {
+func IssueCommentEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -153,7 +153,7 @@ func issueCommentEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s an issue comment\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func issusesEvent(rawData map[string]interface{}) {
+func IssusesEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -169,7 +169,7 @@ func issusesEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s an issue\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func memberEvent(rawData map[string]interface{}) {
+func MemberEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -222,11 +222,11 @@ func memberEvent(rawData map[string]interface{}) {
 	}
 }
 
-func publicEvent() {
+func PublicEvent() {
 	fmt.Printf("- Published a private repository\n")
 }
 
-func pullRequestEvent(rawData map[string]interface{}) {
+func PullRequestEvent(rawData map[string]interface{}) {
 	var actionType, repoName string
 
 	if repo, ok := rawData["repo"].(map[string]interface{}); ok {
@@ -248,7 +248,7 @@ func pullRequestEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a pull request in %s\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]), repoName)
 }
 
-func pullRequestReviewEvent(rawData map[string]interface{}) {
+func PullRequestReviewEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -264,7 +264,7 @@ func pullRequestReviewEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a PR review\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func pullRequestReviewCommentEvent(rawData map[string]interface{}) {
+func PullRequestReviewCommentEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -280,7 +280,7 @@ func pullRequestReviewCommentEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a PR review comment\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func pullRequestReviewThreadEvent(rawData map[string]interface{}) {
+func PullRequestReviewThreadEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -296,7 +296,7 @@ func pullRequestReviewThreadEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Marked a PR comment thread to %s\n", actionType)
 }
 
-func pushEvent(rawData map[string]interface{}) {
+func PushEvent(rawData map[string]interface{}) {
 	var size float64
 	var repoName string
 
@@ -325,7 +325,7 @@ func pushEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Pushed %v commit(s) to %s\n", size, repoName)
 }
 
-func releaseEvent(rawData map[string]interface{}) {
+func ReleaseEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -341,7 +341,7 @@ func releaseEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a release\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func sponsorshipEvent(rawData map[string]interface{}) {
+func SponsorshipEvent(rawData map[string]interface{}) {
 	var actionType string
 
 	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
@@ -357,7 +357,7 @@ func sponsorshipEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a sponsorship\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func watchEvent(rawData map[string]interface{}) {
+func WatchEvent(rawData map[string]interface{}) {
 	var repoName string
 
 	if repo, ok := rawData["repo"].(map[string]interface{}); ok {
