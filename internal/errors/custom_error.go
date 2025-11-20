@@ -12,6 +12,8 @@ var (
 	ErrUnmarshalResponseBody      = errors.New("failed to unmarshal the response body")
 )
 
+type ErrMsg error
+
 type AppError struct {
 	Err error
 }
