@@ -87,6 +87,8 @@ func DeleteEvent(rawData map[string]interface{}) {
 	fmt.Printf("- Deleted a %s, named %s from %s repository\n", branchOrTag, branchOrTagName, repoName)
 }
 
+func DiscussionEvent(rawData map[string]interface{}) {}
+
 func ForkEvent(rawData map[string]interface{}) {
 	var forkedRepoName string
 
@@ -280,22 +282,6 @@ func PullRequestReviewCommentEvent(rawData map[string]interface{}) {
 	fmt.Printf("- %s a PR review comment\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
-func PullRequestReviewThreadEvent(rawData map[string]interface{}) {
-	var actionType string
-
-	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
-		if actionType, ok = payload["action"].(string); !ok {
-			log.Println("Error: Cannot fetch repository data.")
-			return
-		}
-	} else {
-		log.Println("Error: Cannot fetch repository data.")
-		return
-	}
-
-	fmt.Printf("- Marked a PR comment thread to %s\n", actionType)
-}
-
 func PushEvent(rawData map[string]interface{}) {
 	var size float64
 	var repoName string
@@ -339,22 +325,6 @@ func ReleaseEvent(rawData map[string]interface{}) {
 	}
 
 	fmt.Printf("- %s a release\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
-}
-
-func SponsorshipEvent(rawData map[string]interface{}) {
-	var actionType string
-
-	if payload, ok := rawData["payload"].(map[string]interface{}); ok {
-		if actionType, ok = payload["action"].(string); !ok {
-			log.Println("Error: Cannot fetch repository data.")
-			return
-		}
-	} else {
-		log.Println("Error: Cannot fetch repository data.")
-		return
-	}
-
-	fmt.Printf("- %s a sponsorship\n", strings.ToUpper(string(actionType[0]))+strings.ToLower(actionType[1:]))
 }
 
 func WatchEvent(rawData map[string]interface{}) {
