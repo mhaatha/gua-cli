@@ -27,8 +27,10 @@ func NewFetchDataService(cfg *config.Config) FetchDataService {
 func (s *FetchDataServiceImpl) GetUsername(username string) error {
 	requestURL := fmt.Sprintf(githubUserEventsURL, username)
 
-	// Make request with the token
+	// Create HTTP client
 	client := &http.Client{}
+
+	// Make a new request
 	req, err := http.NewRequest(http.MethodGet, requestURL, nil)
 	if err != nil {
 		return appError.AppError{
@@ -36,6 +38,7 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 		}
 	}
 
+	// Add Authorization Bearer header with the Github Personal Access Token as the value to the request
 	req.Header.Set("Authorization", "Bearer "+s.Cfg.PAT)
 
 	// Call the API
@@ -76,39 +79,37 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 
 	for _, data := range prettyResponse {
 		switch eventType := data["type"]; eventType {
-		case "CommitCommentEvent":
+		case text.CommitCommentEvent:
 			helper.CommitCommentEvent(data)
-		case "CreateEvent":
+		case text.CreateEvent:
 			helper.CreateEvent(data)
-		case "DeleteEvent":
+		case text.DeleteEvent:
 			helper.DeleteEvent(data)
-		case "ForkEvent":
+		case text.DiscussionEvent:
+			helper.DiscussionEvent(data)
+		case text.ForkEvent:
 			helper.ForkEvent(data)
-		case "GollumEvent":
+		case text.GollumEvent:
 			helper.GollumEvent(data)
-		case "IssueCommentEvent":
+		case text.IssueCommentEvent:
 			helper.IssueCommentEvent(data)
-		case "IssuesEvent":
+		case text.IssuesEvent:
 			helper.IssusesEvent(data)
-		case "MemberEvent":
+		case text.MemberEvent:
 			helper.MemberEvent(data)
-		case "PublicEvent":
+		case text.PublicEvent:
 			helper.PublicEvent()
-		case "PullRequestEvent":
+		case text.PullRequestEvent:
 			helper.PullRequestEvent(data)
-		case "PullRequestReviewEvent":
+		case text.PullRequestReviewEvent:
 			helper.PullRequestReviewEvent(data)
-		case "PullRequestReviewCommentEvent":
+		case text.PullRequestReviewCommentEvent:
 			helper.PullRequestReviewCommentEvent(data)
-		case "PullRequestReviewThreadEvent":
-			helper.PullRequestReviewThreadEvent(data)
 		case text.PushEvent:
 			helper.PushEvent(data)
-		case "ReleaseEvent":
+		case text.ReleaseEvent:
 			helper.ReleaseEvent(data)
-		case "SponsorshipEvent":
-			helper.SponsorshipEvent(data)
-		case "WatchEvent":
+		case text.WatchEvent:
 			helper.WatchEvent(data)
 		}
 	}
