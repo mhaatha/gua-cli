@@ -13,24 +13,23 @@ import (
 )
 
 func main() {
+	// Load Config
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Printf("error when calling LoadConfig: %v\n", appError.ErrCannotLoadEnv)
 		os.Exit(1)
 	}
 
+	// Create new instance of FetchDataService
 	fetchDataService := service.NewFetchDataService(cfg)
 
+	// Run the Bubble Tea event loop
 	p := tea.NewProgram(initialModel(fetchDataService))
 	if _, err := p.Run(); err != nil {
 		log.Printf("error when running the program: %v\n", err)
 		os.Exit(1)
 	}
 }
-
-type (
-	errMsg error
-)
 
 type model struct {
 	textInput textinput.Model
@@ -73,8 +72,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, checkUserCmd(m.service, username)
 		}
 
-	case errMsg:
+	case appError.ErrMsg:
 		m.err = msg
+		m.isLoading = false
 		return m, nil
 	}
 
@@ -102,7 +102,7 @@ func checkUserCmd(service service.FetchDataService, username string) tea.Cmd {
 	return func() tea.Msg {
 		err := service.GetUsername(username)
 		if err != nil {
-			return errMsg(err)
+			return appError.ErrMsg(err)
 		}
 		return nil
 	}
