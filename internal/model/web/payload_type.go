@@ -36,5 +36,9 @@ type GollumPayload struct {
 }
 
 type IssueCommentPayload struct {
-	Action string
+	Action string `json:"action"`
+}
+
+type IssuesPayload struct {
+	Action string `json:"action"`
 }
