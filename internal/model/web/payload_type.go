@@ -32,5 +32,9 @@ type ForkPayload struct {
 }
 
 type GollumPayload struct {
-	Pages []Pages
+	Pages []Pages `json:"pages"`
+}
+
+type IssueCommentPayload struct {
+	Action string
 }
