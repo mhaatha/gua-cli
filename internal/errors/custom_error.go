@@ -10,6 +10,8 @@ var (
 	ErrInvalidGithubPAT           = errors.New("provide your *valid* Github Personal Access Token in .env file")
 	ErrReadResponseBody           = errors.New("failed to read the response body")
 	ErrUnmarshalResponseBody      = errors.New("failed to unmarshal the response body")
+	ErrReadNextJSONToken          = errors.New("error read next JSON token")
+	ErrDecodeJSON                 = errors.New("error when decoding JSON data")
 )
 
 type ErrMsg error

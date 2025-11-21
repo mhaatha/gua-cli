@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"github.com/mhaatha/gua-cli/internal/config"
 	appError "github.com/mhaatha/gua-cli/internal/errors"
 	"github.com/mhaatha/gua-cli/internal/helper"
+	"github.com/mhaatha/gua-cli/internal/model/web"
 	"github.com/mhaatha/gua-cli/internal/text"
 )
 
@@ -71,19 +73,32 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 		}
 	}
 
-	// Unmarshal the JSON response
-	var prettyResponse []map[string]interface{}
-	err = json.Unmarshal(responseData, &prettyResponse)
+	// Read and decode a streaming array of JSON response data
+	dec := json.NewDecoder(bytes.NewBuffer(responseData))
+
+	// Read open bracket
+	_, err = dec.Token()
 	if err != nil {
 		return appError.AppError{
-			Err: appError.ErrUnmarshalResponseBody,
+			Err: appError.ErrReadNextJSONToken,
 		}
 	}
 
-	for _, data := range prettyResponse {
-		switch eventType := data[fieldType]; eventType {
+	for dec.More() {
+		var data web.GithubResponse
+
+		err := dec.Decode(&data)
+		if err != nil {
+			return appError.AppError{
+				Err: appError.ErrDecodeJSON,
+			}
+		}
+
+		switch data.Type {
 		case text.CommitCommentEvent:
-			helper.CommitCommentEvent(data)
+			var payload web.CommitCommentPayload
+
+			json.Unmarshal(data.Payload, &payload)
 		case text.CreateEvent:
 			helper.CreateEvent(data)
 		case text.DeleteEvent:
@@ -114,6 +129,14 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 			helper.ReleaseEvent(data)
 		case text.WatchEvent:
 			helper.WatchEvent(data)
+		}
+	}
+
+	// Read closing bracket
+	_, err = dec.Token()
+	if err != nil {
+		return appError.AppError{
+			Err: appError.ErrReadNextJSONToken,
 		}
 	}
 
