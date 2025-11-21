@@ -14,7 +14,6 @@ import (
 
 const (
 	githubUserEventsURL = "https://api.github.com/users/%s/events"
-	fieldType           = "type"
 )
 
 type FetchDataServiceImpl struct {
