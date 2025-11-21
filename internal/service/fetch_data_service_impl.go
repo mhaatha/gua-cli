@@ -53,12 +53,12 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 			Err: appError.ErrNetworkConnectivityProblem,
 		}
 	}
-	if response.StatusCode == 404 {
+	if response.StatusCode == http.StatusNotFound {
 		return appError.AppError{
 			Err: appError.ErrUsernameNotFound,
 		}
 	}
-	if response.StatusCode == 401 {
+	if response.StatusCode == http.StatusUnauthorized {
 		return appError.AppError{
 			Err: appError.ErrInvalidGithubPAT,
 		}
