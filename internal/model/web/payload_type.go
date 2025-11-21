@@ -1,6 +1,10 @@
 package web
 
-type CommitCommentPayload struct {
+type PushPayload struct {
+	Ref string `json:"ref"`
+}
+
+type WatchPayload struct {
 	Action string `json:"action"`
 }
 
@@ -15,15 +19,14 @@ type CreatePayload struct {
 	PusherType   string `json:"pusher_type"`
 }
 
-type DeletePayload struct {
-	Ref        string `json:"ref"`
-	RefType    string `json:"ref_type"`
-	FullRef    string `json:"full_ref"`
-	PusherType string `json:"pusher_type"`
+type IssuesPayload struct {
+	Action string `json:"action"`
 }
 
-type DiscussionPayload struct {
-	Action string `json:"action"`
+type PullRequestPayload struct {
+	Action      string      `json:"action"`
+	Number      int         `json:"number"`
+	PullRequest PullRequest `json:"pull_request"`
 }
 
 type ForkPayload struct {
@@ -31,25 +34,18 @@ type ForkPayload struct {
 	Forkee Forkee `json:"forkee"`
 }
 
-type GollumPayload struct {
-	Pages []Pages `json:"pages"`
-}
-
 type IssueCommentPayload struct {
 	Action string `json:"action"`
 }
 
-type IssuesPayload struct {
-	Action string `json:"action"`
-}
-
-type MemberPayload struct {
-	Action string `json:"action"`
-	Member Member `json:"member"`
-}
-
-type PullRequestPayload struct {
+type PullRequestReviewPayload struct {
 	Action      string      `json:"action"`
-	Number      int         `json:"number"`
 	PullRequest PullRequest `json:"pull_request"`
+}
+
+type DeletePayload struct {
+	Ref        string `json:"ref"`
+	RefType    string `json:"ref_type"`
+	FullRef    string `json:"full_ref"`
+	PusherType string `json:"pusher_type"`
 }
