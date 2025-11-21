@@ -6,15 +6,13 @@ import (
 )
 
 type GithubResponse struct {
-	ID        string    `json:"id"`
-	Type      string    `json:"type"`
-	Actor     Actor     `json:"actor"`
-	Repo      Repo      `json:"repo"`
-	Public    bool      `json:"public"`
-	CreatedAt time.Time `json:"created_at"`
-
-	// Payload can be nil
-	Payload *json.RawMessage `json:"payload"`
+	ID        string          `json:"id"`
+	Type      string          `json:"type"`
+	Actor     Actor           `json:"actor"`
+	Repo      Repo            `json:"repo"`
+	Payload   json.RawMessage `json:"payload"`
+	Public    bool            `json:"public"`
+	CreatedAt time.Time       `json:"created_at"`
 
 	// Org can be nil
 	Org *Org `json:"org,omitempty"`
