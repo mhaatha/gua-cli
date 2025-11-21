@@ -95,40 +95,26 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 		}
 
 		switch data.Type {
-		case text.CommitCommentEvent:
-			var payload web.CommitCommentPayload
-
-			json.Unmarshal(data.Payload, &payload)
-		case text.CreateEvent:
-			helper.CreateEvent(data)
-		case text.DeleteEvent:
-			helper.DeleteEvent(data)
-		case text.DiscussionEvent:
-			helper.DiscussionEvent(data)
-		case text.ForkEvent:
-			helper.ForkEvent(data)
-		case text.GollumEvent:
-			helper.GollumEvent(data)
-		case text.IssueCommentEvent:
-			helper.IssueCommentEvent(data)
-		case text.IssuesEvent:
-			helper.IssusesEvent(data)
-		case text.MemberEvent:
-			helper.MemberEvent(data)
-		case text.PublicEvent:
-			helper.PublicEvent()
-		case text.PullRequestEvent:
-			helper.PullRequestEvent(data)
-		case text.PullRequestReviewEvent:
-			helper.PullRequestReviewEvent(data)
-		case text.PullRequestReviewCommentEvent:
-			helper.PullRequestReviewCommentEvent(data)
 		case text.PushEvent:
 			helper.PushEvent(data)
-		case text.ReleaseEvent:
-			helper.ReleaseEvent(data)
 		case text.WatchEvent:
 			helper.WatchEvent(data)
+		case text.CreateEvent:
+			helper.CreateEvent(data)
+		case text.IssuesEvent:
+			helper.IssuesEvent(data)
+		case text.PullRequestEvent:
+			helper.PullRequestEvent(data)
+		case text.ForkEvent:
+			helper.ForkEvent(data)
+		case text.IssueCommentEvent:
+			helper.IssueCommentEvent(data)
+		case text.PullRequestReviewEvent:
+			helper.PullRequestReviewEvent(data)
+		case text.DeleteEvent:
+			helper.DeleteEvent(data)
+		case text.ReleaseEvent:
+			helper.ReleaseEvent(data)
 		}
 	}
 
