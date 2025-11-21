@@ -1,5 +1,5 @@
 package web
 
 type Forkee struct {
-	Name string
+	Name string `json:"name"`
 }

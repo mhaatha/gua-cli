@@ -42,3 +42,8 @@ type IssueCommentPayload struct {
 type IssuesPayload struct {
 	Action string `json:"action"`
 }
+
+type MemberPayload struct {
+	Action string `json:"action"`
+	Member Member `json:"member"`
+}
