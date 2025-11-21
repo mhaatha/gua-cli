@@ -30,3 +30,7 @@ type ForkPayload struct {
 	Action string `json:"action"`
 	Forkee Forkee `json:"forkee"`
 }
+
+type GollumPayload struct {
+	Pages []Pages
+}
