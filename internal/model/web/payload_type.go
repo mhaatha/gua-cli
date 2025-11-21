@@ -25,3 +25,8 @@ type DeletePayload struct {
 type DiscussionPayload struct {
 	Action string `json:"action"`
 }
+
+type ForkPayload struct {
+	Action string `json:"action"`
+	Forkee Forkee `json:"forkee"`
+}
