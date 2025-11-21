@@ -47,3 +47,9 @@ type MemberPayload struct {
 	Action string `json:"action"`
 	Member Member `json:"member"`
 }
+
+type PullRequestPayload struct {
+	Action      string      `json:"action"`
+	Number      int         `json:"number"`
+	PullRequest PullRequest `json:"pull_request"`
+}
