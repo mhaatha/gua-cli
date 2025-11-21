@@ -12,7 +12,10 @@ import (
 	"github.com/mhaatha/gua-cli/internal/text"
 )
 
-const githubUserEventsURL = "https://api.github.com/users/%s/events"
+const (
+	githubUserEventsURL = "https://api.github.com/users/%s/events"
+	fieldType           = "type"
+)
 
 type FetchDataServiceImpl struct {
 	Cfg *config.Config
@@ -78,7 +81,7 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 	}
 
 	for _, data := range prettyResponse {
-		switch eventType := data["type"]; eventType {
+		switch eventType := data[fieldType]; eventType {
 		case text.CommitCommentEvent:
 			helper.CommitCommentEvent(data)
 		case text.CreateEvent:
