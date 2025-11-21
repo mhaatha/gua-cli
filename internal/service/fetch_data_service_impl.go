@@ -1,10 +1,8 @@
 package service
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/mhaatha/gua-cli/internal/config"
@@ -65,16 +63,8 @@ func (s *FetchDataServiceImpl) GetUsername(username string) error {
 	}
 	defer response.Body.Close()
 
-	// Read the responseData
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		return appError.AppError{
-			Err: appError.ErrReadResponseBody,
-		}
-	}
-
 	// Read and decode a streaming array of JSON response data
-	dec := json.NewDecoder(bytes.NewBuffer(responseData))
+	dec := json.NewDecoder(response.Body)
 
 	// Read open bracket
 	_, err = dec.Token()
