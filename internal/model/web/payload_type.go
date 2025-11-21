@@ -21,3 +21,7 @@ type DeletePayload struct {
 	FullRef    string `json:"full_ref"`
 	PusherType string `json:"pusher_type"`
 }
+
+type DiscussionPayload struct {
+	Action string `json:"action"`
+}
